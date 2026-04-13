@@ -6,7 +6,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { motion } from "framer-motion";
-import { ArrowLeft, BarChart3, TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, Target, DollarSign, Shield, Monitor, Download, Lightbulb, Users, Gift, Truck, Handshake, Layers, Heart, Wallet, PenTool, Save } from "lucide-react";
+import { ArrowLeft, BarChart3, TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, Target, DollarSign, Shield, Monitor, Download, Lightbulb, Users, Gift, Truck, Handshake, Layers, Heart, Wallet, PenTool, Save, Sparkles, Loader2 } from "lucide-react";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from "recharts";
 import type { ProjectData, SWOTAnalysis, FeasibilityResult } from "@/lib/analysis";
 import { Slider } from "@/components/ui/slider";
@@ -44,6 +44,31 @@ export default function ProjectResults() {
   });
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [bmcSaving, setBmcSaving] = useState(false);
+  const [bmcLoadingKey, setBmcLoadingKey] = useState<BmcKey | null>(null);
+
+  const suggestBmc = async (key: BmcKey) => {
+    if (!project) return;
+    setBmcLoadingKey(key);
+    try {
+      const { data, error } = await supabase.functions.invoke("bmc-suggest", {
+        body: {
+          sector: project.sector || "Général",
+          block_key: key,
+          project_name: project.name,
+          description: projectData?.description || "",
+        },
+      });
+      if (error) throw error;
+      if (data?.suggestion) {
+        handleBmcChange(key, data.suggestion);
+        toast.success("Suggestion IA appliquée");
+      }
+    } catch (e: any) {
+      toast.error(e?.message || "Erreur lors de la génération");
+    } finally {
+      setBmcLoadingKey(null);
+    }
+  };
 
   const saveBmc = useCallback(async (data: Record<BmcKey, string>) => {
     if (!id) return;
@@ -251,9 +276,19 @@ export default function ProjectResults() {
                     key={block.key}
                     className={`p-3 rounded-xl border ${block.highlight ? "border-primary/30 bg-primary/5" : "border-border bg-card"} ${block.span} flex flex-col`}
                   >
-                    <div className="flex items-center gap-1.5 mb-2">
-                      <block.icon className={`w-3.5 h-3.5 ${block.highlight ? "text-primary" : "text-muted-foreground"}`} />
-                      <span className="text-xs font-semibold font-display text-foreground">{block.title}</span>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-1.5">
+                        <block.icon className={`w-3.5 h-3.5 ${block.highlight ? "text-primary" : "text-muted-foreground"}`} />
+                        <span className="text-xs font-semibold font-display text-foreground">{block.title}</span>
+                      </div>
+                      <button
+                        onClick={() => suggestBmc(block.key)}
+                        disabled={bmcLoadingKey !== null}
+                        className="p-1 rounded-md hover:bg-primary/10 text-primary transition-colors disabled:opacity-50"
+                        title="Suggestion IA"
+                      >
+                        {bmcLoadingKey === block.key ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                      </button>
                     </div>
                     <Textarea
                       value={bmcData[block.key]}
@@ -267,9 +302,19 @@ export default function ProjectResults() {
                   { key: "channels" as BmcKey, title: "Canaux", icon: Truck },
                 ] as const).map((block) => (
                   <div key={block.key} className="p-3 rounded-xl border border-border bg-card flex flex-col">
-                    <div className="flex items-center gap-1.5 mb-2">
-                      <block.icon className="w-3.5 h-3.5 text-muted-foreground" />
-                      <span className="text-xs font-semibold font-display text-foreground">{block.title}</span>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-1.5">
+                        <block.icon className="w-3.5 h-3.5 text-muted-foreground" />
+                        <span className="text-xs font-semibold font-display text-foreground">{block.title}</span>
+                      </div>
+                      <button
+                        onClick={() => suggestBmc(block.key)}
+                        disabled={bmcLoadingKey !== null}
+                        className="p-1 rounded-md hover:bg-primary/10 text-primary transition-colors disabled:opacity-50"
+                        title="Suggestion IA"
+                      >
+                        {bmcLoadingKey === block.key ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                      </button>
                     </div>
                     <Textarea
                       value={bmcData[block.key]}
@@ -282,9 +327,14 @@ export default function ProjectResults() {
               </div>
               <div className="grid md:grid-cols-2 gap-3 mt-3">
                 <div className="p-3 rounded-xl border border-border bg-card">
-                  <div className="flex items-center gap-1.5 mb-2">
-                    <Wallet className="w-3.5 h-3.5 text-destructive" />
-                    <span className="text-xs font-semibold font-display text-foreground">Structure de Coûts</span>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-1.5">
+                      <Wallet className="w-3.5 h-3.5 text-destructive" />
+                      <span className="text-xs font-semibold font-display text-foreground">Structure de Coûts</span>
+                    </div>
+                    <button onClick={() => suggestBmc("costs")} disabled={bmcLoadingKey !== null} className="p-1 rounded-md hover:bg-primary/10 text-primary transition-colors disabled:opacity-50" title="Suggestion IA">
+                      {bmcLoadingKey === "costs" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                    </button>
                   </div>
                   <Textarea
                     value={bmcData.costs}
@@ -293,9 +343,14 @@ export default function ProjectResults() {
                   />
                 </div>
                 <div className="p-3 rounded-xl border border-primary/30 bg-primary/5">
-                  <div className="flex items-center gap-1.5 mb-2">
-                    <DollarSign className="w-3.5 h-3.5 text-primary" />
-                    <span className="text-xs font-semibold font-display text-foreground">Sources de Revenus</span>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-1.5">
+                      <DollarSign className="w-3.5 h-3.5 text-primary" />
+                      <span className="text-xs font-semibold font-display text-foreground">Sources de Revenus</span>
+                    </div>
+                    <button onClick={() => suggestBmc("revenue")} disabled={bmcLoadingKey !== null} className="p-1 rounded-md hover:bg-primary/10 text-primary transition-colors disabled:opacity-50" title="Suggestion IA">
+                      {bmcLoadingKey === "revenue" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                    </button>
                   </div>
                   <Textarea
                     value={bmcData.revenue}
