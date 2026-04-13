@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       projects: {
         Row: {
+          bmc_canvas: Json | null
           created_at: string
           description: string | null
           feasibility_result: Json | null
@@ -29,6 +30,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          bmc_canvas?: Json | null
           created_at?: string
           description?: string | null
           feasibility_result?: Json | null
@@ -42,6 +44,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          bmc_canvas?: Json | null
           created_at?: string
           description?: string | null
           feasibility_result?: Json | null
