@@ -36,6 +36,30 @@ export default function ProjectResults() {
   const [simData, setSimData] = useState<ProjectData | null>(null);
   const [simResult, setSimResult] = useState<FeasibilityResult | null>(null);
 
+  const bmcKeys = ["partners", "activities", "value_prop", "customer_rel", "segments", "resources", "channels", "costs", "revenue"] as const;
+  type BmcKey = typeof bmcKeys[number];
+  const [bmcData, setBmcData] = useState<Record<BmcKey, string>>({
+    partners: "", activities: "", value_prop: "", customer_rel: "",
+    segments: "", resources: "", channels: "", costs: "", revenue: "",
+  });
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [bmcSaving, setBmcSaving] = useState(false);
+
+  const saveBmc = useCallback(async (data: Record<BmcKey, string>) => {
+    if (!id) return;
+    setBmcSaving(true);
+    await supabase.from("projects").update({ bmc_canvas: data as any }).eq("id", id);
+    setBmcSaving(false);
+    toast.success("Canvas sauvegardé");
+  }, [id]);
+
+  const handleBmcChange = (key: BmcKey, value: string) => {
+    const updated = { ...bmcData, [key]: value };
+    setBmcData(updated);
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => saveBmc(updated), 1200);
+  };
+
   useEffect(() => {
     loadProject();
   }, [id]);
@@ -46,6 +70,20 @@ export default function ProjectResults() {
     setProject(data);
     setSimData(data.project_data as any);
     setSimResult(data.feasibility_result as any);
+    // Load BMC canvas data
+    const pd = data.project_data as any;
+    const saved = (data as any).bmc_canvas as Record<string, string> | null;
+    setBmcData({
+      partners: saved?.partners || pd?.competitors || "À définir",
+      activities: saved?.activities || pd?.business_model || "À définir",
+      value_prop: saved?.value_prop || pd?.value_proposition || "À définir",
+      customer_rel: saved?.customer_rel || "Accompagnement personnalisé, support continu",
+      segments: saved?.segments || pd?.target_customers || "À définir",
+      resources: saved?.resources || `Investissement: ${pd?.initial_investment?.toLocaleString()} TND`,
+      channels: saved?.channels || "Plateforme digitale, vente directe",
+      costs: saved?.costs || `Investissement initial: ${pd?.initial_investment?.toLocaleString()} TND • Coûts mensuels: ${pd?.monthly_costs?.toLocaleString()} TND`,
+      revenue: saved?.revenue || `Revenu mensuel estimé: ${pd?.expected_revenue?.toLocaleString()} TND • Prix unitaire: ${pd?.product_price} TND × ${pd?.units_per_month} unités/mois`,
+    });
     setLoading(false);
   };
 
