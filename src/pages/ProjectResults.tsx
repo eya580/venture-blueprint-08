@@ -44,6 +44,31 @@ export default function ProjectResults() {
   });
   const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [bmcSaving, setBmcSaving] = useState(false);
+  const [bmcLoadingKey, setBmcLoadingKey] = useState<BmcKey | null>(null);
+
+  const suggestBmc = async (key: BmcKey) => {
+    if (!project) return;
+    setBmcLoadingKey(key);
+    try {
+      const { data, error } = await supabase.functions.invoke("bmc-suggest", {
+        body: {
+          sector: project.sector || "Général",
+          block_key: key,
+          project_name: project.name,
+          description: projectData?.description || "",
+        },
+      });
+      if (error) throw error;
+      if (data?.suggestion) {
+        handleBmcChange(key, data.suggestion);
+        toast.success("Suggestion IA appliquée");
+      }
+    } catch (e: any) {
+      toast.error(e?.message || "Erreur lors de la génération");
+    } finally {
+      setBmcLoadingKey(null);
+    }
+  };
 
   const saveBmc = useCallback(async (data: Record<BmcKey, string>) => {
     if (!id) return;
