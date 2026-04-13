@@ -121,7 +121,7 @@ export default function ProjectResults() {
           <div className="grid md:grid-cols-4 gap-4">
             {[
               { label: "ROI", value: `${feasibility.roi}%`, icon: TrendingUp, positive: feasibility.roi > 0 },
-              { label: "VAN (NPV)", value: `${feasibility.npv.toLocaleString()} €`, icon: DollarSign, positive: feasibility.npv > 0 },
+              { label: "VAN (NPV)", value: `${feasibility.npv.toLocaleString()} TND`, icon: DollarSign, positive: feasibility.npv > 0 },
               { label: "TRI (IRR)", value: `${feasibility.irr}%`, icon: TrendingUp, positive: feasibility.irr > 10 },
               { label: "Seuil rentabilité", value: `${feasibility.breakeven_months} mois`, icon: Target, positive: feasibility.breakeven_months < 24 },
             ].map((kpi) => (
@@ -168,11 +168,11 @@ export default function ProjectResults() {
               {simData && (
                 <>
                   <div>
-                    <div className="flex justify-between text-sm mb-2"><span className="text-muted-foreground">Prix unitaire</span><span className="font-semibold text-foreground">{simData.product_price} €</span></div>
+                    <div className="flex justify-between text-sm mb-2"><span className="text-muted-foreground">Prix unitaire</span><span className="font-semibold text-foreground">{simData.product_price} TND</span></div>
                     <Slider value={[simData.product_price]} min={1} max={500} step={1} onValueChange={([v]) => handleSimChange("product_price", v)} />
                   </div>
                   <div>
-                    <div className="flex justify-between text-sm mb-2"><span className="text-muted-foreground">Coûts mensuels</span><span className="font-semibold text-foreground">{simData.monthly_costs.toLocaleString()} €</span></div>
+                    <div className="flex justify-between text-sm mb-2"><span className="text-muted-foreground">Coûts mensuels</span><span className="font-semibold text-foreground">{simData.monthly_costs.toLocaleString()} TND</span></div>
                     <Slider value={[simData.monthly_costs]} min={500} max={100000} step={500} onValueChange={([v]) => handleSimChange("monthly_costs", v)} />
                   </div>
                   <div>
