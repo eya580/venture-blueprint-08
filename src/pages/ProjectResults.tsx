@@ -1,15 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
 import { motion } from "framer-motion";
-import { ArrowLeft, BarChart3, TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, Target, DollarSign, Shield, Monitor, Download, Lightbulb, Users, Gift, Truck, Handshake, Layers, Heart, Wallet, PenTool } from "lucide-react";
+import { ArrowLeft, BarChart3, TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, Target, DollarSign, Shield, Monitor, Download, Lightbulb, Users, Gift, Truck, Handshake, Layers, Heart, Wallet, PenTool, Save } from "lucide-react";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from "recharts";
 import type { ProjectData, SWOTAnalysis, FeasibilityResult } from "@/lib/analysis";
 import { Slider } from "@/components/ui/slider";
 import { analyzeFeasibility } from "@/lib/analysis";
+import { toast } from "sonner";
 
 function ScoreCircle({ score, label, icon: Icon }: { score: number; label: string; icon: any }) {
   const color = score >= 70 ? "text-primary" : score >= 50 ? "text-accent" : "text-destructive";
@@ -34,6 +36,30 @@ export default function ProjectResults() {
   const [simData, setSimData] = useState<ProjectData | null>(null);
   const [simResult, setSimResult] = useState<FeasibilityResult | null>(null);
 
+  const bmcKeys = ["partners", "activities", "value_prop", "customer_rel", "segments", "resources", "channels", "costs", "revenue"] as const;
+  type BmcKey = typeof bmcKeys[number];
+  const [bmcData, setBmcData] = useState<Record<BmcKey, string>>({
+    partners: "", activities: "", value_prop: "", customer_rel: "",
+    segments: "", resources: "", channels: "", costs: "", revenue: "",
+  });
+  const saveTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [bmcSaving, setBmcSaving] = useState(false);
+
+  const saveBmc = useCallback(async (data: Record<BmcKey, string>) => {
+    if (!id) return;
+    setBmcSaving(true);
+    await supabase.from("projects").update({ bmc_canvas: data as any }).eq("id", id);
+    setBmcSaving(false);
+    toast.success("Canvas sauvegardé");
+  }, [id]);
+
+  const handleBmcChange = (key: BmcKey, value: string) => {
+    const updated = { ...bmcData, [key]: value };
+    setBmcData(updated);
+    if (saveTimer.current) clearTimeout(saveTimer.current);
+    saveTimer.current = setTimeout(() => saveBmc(updated), 1200);
+  };
+
   useEffect(() => {
     loadProject();
   }, [id]);
@@ -44,6 +70,20 @@ export default function ProjectResults() {
     setProject(data);
     setSimData(data.project_data as any);
     setSimResult(data.feasibility_result as any);
+    // Load BMC canvas data
+    const pd = data.project_data as any;
+    const saved = (data as any).bmc_canvas as Record<string, string> | null;
+    setBmcData({
+      partners: saved?.partners || pd?.competitors || "À définir",
+      activities: saved?.activities || pd?.business_model || "À définir",
+      value_prop: saved?.value_prop || pd?.value_proposition || "À définir",
+      customer_rel: saved?.customer_rel || "Accompagnement personnalisé, support continu",
+      segments: saved?.segments || pd?.target_customers || "À définir",
+      resources: saved?.resources || `Investissement: ${pd?.initial_investment?.toLocaleString()} TND`,
+      channels: saved?.channels || "Plateforme digitale, vente directe",
+      costs: saved?.costs || `Investissement initial: ${pd?.initial_investment?.toLocaleString()} TND • Coûts mensuels: ${pd?.monthly_costs?.toLocaleString()} TND`,
+      revenue: saved?.revenue || `Revenu mensuel estimé: ${pd?.expected_revenue?.toLocaleString()} TND • Prix unitaire: ${pd?.product_price} TND × ${pd?.units_per_month} unités/mois`,
+    });
     setLoading(false);
   };
 
@@ -192,44 +232,53 @@ export default function ProjectResults() {
         {/* Business Model Canvas */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.27 }}>
           <Card className="shadow-card">
-            <CardHeader><CardTitle className="font-display flex items-center gap-2"><Layers className="w-5 h-5 text-primary" /> Business Model Canvas</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle className="font-display flex items-center gap-2">
+                <Layers className="w-5 h-5 text-primary" /> Business Model Canvas
+                {bmcSaving && <span className="text-xs text-muted-foreground flex items-center gap-1"><Save className="w-3 h-3 animate-pulse" /> Sauvegarde...</span>}
+              </CardTitle>
+            </CardHeader>
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-3 auto-rows-fr">
-                {/* Row 1: Key Partners | Key Activities | Value Prop | Customer Rel | Customer Segments */}
-                {[
-                  { title: "Partenaires Clés", icon: Handshake, content: projectData.competitors || "À définir", span: "row-span-1" },
-                  { title: "Activités Clés", icon: PenTool, content: projectData.business_model || "À définir", span: "row-span-1" },
-                  { title: "Proposition de Valeur", icon: Gift, content: projectData.value_proposition || "À définir", span: "row-span-2 col-span-1", highlight: true },
-                  { title: "Relation Client", icon: Heart, content: "Accompagnement personnalisé, support continu", span: "row-span-1" },
-                  { title: "Segments Clients", icon: Users, content: projectData.target_customers || "À définir", span: "row-span-1" },
-                ].map((block) => (
+                {([
+                  { key: "partners" as BmcKey, title: "Partenaires Clés", icon: Handshake, span: "row-span-1", highlight: false },
+                  { key: "activities" as BmcKey, title: "Activités Clés", icon: PenTool, span: "row-span-1", highlight: false },
+                  { key: "value_prop" as BmcKey, title: "Proposition de Valeur", icon: Gift, span: "row-span-2 col-span-1", highlight: true },
+                  { key: "customer_rel" as BmcKey, title: "Relation Client", icon: Heart, span: "row-span-1", highlight: false },
+                  { key: "segments" as BmcKey, title: "Segments Clients", icon: Users, span: "row-span-1", highlight: false },
+                ]).map((block) => (
                   <div
-                    key={block.title}
+                    key={block.key}
                     className={`p-3 rounded-xl border ${block.highlight ? "border-primary/30 bg-primary/5" : "border-border bg-card"} ${block.span} flex flex-col`}
                   >
                     <div className="flex items-center gap-1.5 mb-2">
                       <block.icon className={`w-3.5 h-3.5 ${block.highlight ? "text-primary" : "text-muted-foreground"}`} />
                       <span className="text-xs font-semibold font-display text-foreground">{block.title}</span>
                     </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed flex-1">{block.content}</p>
+                    <Textarea
+                      value={bmcData[block.key]}
+                      onChange={(e) => handleBmcChange(block.key, e.target.value)}
+                      className="text-xs text-muted-foreground leading-relaxed flex-1 resize-none border-0 bg-transparent p-0 focus-visible:ring-0 shadow-none min-h-[60px]"
+                    />
                   </div>
                 ))}
-                {/* Row 2 partial: Key Resources | Channels */}
-                {[
-                  { title: "Ressources Clés", icon: Monitor, content: `Investissement: ${projectData.initial_investment?.toLocaleString()} TND` },
-                  { title: "Canaux", icon: Truck, content: "Plateforme digitale, vente directe" },
-                ].map((block) => (
-                  <div key={block.title} className="p-3 rounded-xl border border-border bg-card flex flex-col">
+                {([
+                  { key: "resources" as BmcKey, title: "Ressources Clés", icon: Monitor },
+                  { key: "channels" as BmcKey, title: "Canaux", icon: Truck },
+                ] as const).map((block) => (
+                  <div key={block.key} className="p-3 rounded-xl border border-border bg-card flex flex-col">
                     <div className="flex items-center gap-1.5 mb-2">
                       <block.icon className="w-3.5 h-3.5 text-muted-foreground" />
                       <span className="text-xs font-semibold font-display text-foreground">{block.title}</span>
                     </div>
-                    <p className="text-xs text-muted-foreground leading-relaxed flex-1">{block.content}</p>
+                    <Textarea
+                      value={bmcData[block.key]}
+                      onChange={(e) => handleBmcChange(block.key, e.target.value)}
+                      className="text-xs text-muted-foreground leading-relaxed flex-1 resize-none border-0 bg-transparent p-0 focus-visible:ring-0 shadow-none min-h-[60px]"
+                    />
                   </div>
                 ))}
-                {/* Skip one cell for value prop row-span-2 */}
                 <div className="hidden md:block" />
-                {/* Row 3: Cost Structure (span 2-3) | Revenue Streams (span 2-3) */}
               </div>
               <div className="grid md:grid-cols-2 gap-3 mt-3">
                 <div className="p-3 rounded-xl border border-border bg-card">
@@ -237,18 +286,22 @@ export default function ProjectResults() {
                     <Wallet className="w-3.5 h-3.5 text-destructive" />
                     <span className="text-xs font-semibold font-display text-foreground">Structure de Coûts</span>
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    Investissement initial: {projectData.initial_investment?.toLocaleString()} TND • Coûts mensuels: {projectData.monthly_costs?.toLocaleString()} TND
-                  </p>
+                  <Textarea
+                    value={bmcData.costs}
+                    onChange={(e) => handleBmcChange("costs", e.target.value)}
+                    className="text-xs text-muted-foreground resize-none border-0 bg-transparent p-0 focus-visible:ring-0 shadow-none min-h-[40px]"
+                  />
                 </div>
                 <div className="p-3 rounded-xl border border-primary/30 bg-primary/5">
                   <div className="flex items-center gap-1.5 mb-2">
                     <DollarSign className="w-3.5 h-3.5 text-primary" />
                     <span className="text-xs font-semibold font-display text-foreground">Sources de Revenus</span>
                   </div>
-                  <p className="text-xs text-muted-foreground">
-                    Revenu mensuel estimé: {projectData.expected_revenue?.toLocaleString()} TND • Prix unitaire: {projectData.product_price} TND × {projectData.units_per_month} unités/mois
-                  </p>
+                  <Textarea
+                    value={bmcData.revenue}
+                    onChange={(e) => handleBmcChange("revenue", e.target.value)}
+                    className="text-xs text-muted-foreground resize-none border-0 bg-transparent p-0 focus-visible:ring-0 shadow-none min-h-[40px]"
+                  />
                 </div>
               </div>
             </CardContent>
