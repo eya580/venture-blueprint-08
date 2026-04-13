@@ -85,24 +85,6 @@ export default function Landing() {
             </div>
           </motion.div>
 
-          {/* Stats */}
-          <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.7, delay: 0.3 }}
-            className="mt-16 grid grid-cols-3 gap-8 max-w-2xl mx-auto"
-          >
-            {[
-              { val: "500+", label: "Projets analysés" },
-              { val: "94%", label: "Taux de satisfaction" },
-              { val: "4 min", label: "Temps moyen d'analyse" },
-            ].map((s) => (
-              <div key={s.label} className="text-center">
-                <div className="text-3xl font-bold font-display text-primary">{s.val}</div>
-                <div className="text-sm text-muted-foreground mt-1">{s.label}</div>
-              </div>
-            ))}
-          </motion.div>
         </div>
       </section>
 
