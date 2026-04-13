@@ -327,9 +327,14 @@ export default function ProjectResults() {
               </div>
               <div className="grid md:grid-cols-2 gap-3 mt-3">
                 <div className="p-3 rounded-xl border border-border bg-card">
-                  <div className="flex items-center gap-1.5 mb-2">
-                    <Wallet className="w-3.5 h-3.5 text-destructive" />
-                    <span className="text-xs font-semibold font-display text-foreground">Structure de Coûts</span>
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-1.5">
+                      <Wallet className="w-3.5 h-3.5 text-destructive" />
+                      <span className="text-xs font-semibold font-display text-foreground">Structure de Coûts</span>
+                    </div>
+                    <button onClick={() => suggestBmc("costs")} disabled={bmcLoadingKey !== null} className="p-1 rounded-md hover:bg-primary/10 text-primary transition-colors disabled:opacity-50" title="Suggestion IA">
+                      {bmcLoadingKey === "costs" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                    </button>
                   </div>
                   <Textarea
                     value={bmcData.costs}
