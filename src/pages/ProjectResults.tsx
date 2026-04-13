@@ -1,15 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
 import { motion } from "framer-motion";
-import { ArrowLeft, BarChart3, TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, Target, DollarSign, Shield, Monitor, Download, Lightbulb, Users, Gift, Truck, Handshake, Layers, Heart, Wallet, PenTool } from "lucide-react";
+import { ArrowLeft, BarChart3, TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, Target, DollarSign, Shield, Monitor, Download, Lightbulb, Users, Gift, Truck, Handshake, Layers, Heart, Wallet, PenTool, Save } from "lucide-react";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from "recharts";
 import type { ProjectData, SWOTAnalysis, FeasibilityResult } from "@/lib/analysis";
 import { Slider } from "@/components/ui/slider";
 import { analyzeFeasibility } from "@/lib/analysis";
+import { toast } from "sonner";
 
 function ScoreCircle({ score, label, icon: Icon }: { score: number; label: string; icon: any }) {
   const color = score >= 70 ? "text-primary" : score >= 50 ? "text-accent" : "text-destructive";
