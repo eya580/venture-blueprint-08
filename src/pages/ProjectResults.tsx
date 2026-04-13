@@ -276,9 +276,19 @@ export default function ProjectResults() {
                     key={block.key}
                     className={`p-3 rounded-xl border ${block.highlight ? "border-primary/30 bg-primary/5" : "border-border bg-card"} ${block.span} flex flex-col`}
                   >
-                    <div className="flex items-center gap-1.5 mb-2">
-                      <block.icon className={`w-3.5 h-3.5 ${block.highlight ? "text-primary" : "text-muted-foreground"}`} />
-                      <span className="text-xs font-semibold font-display text-foreground">{block.title}</span>
+                    <div className="flex items-center justify-between mb-2">
+                      <div className="flex items-center gap-1.5">
+                        <block.icon className={`w-3.5 h-3.5 ${block.highlight ? "text-primary" : "text-muted-foreground"}`} />
+                        <span className="text-xs font-semibold font-display text-foreground">{block.title}</span>
+                      </div>
+                      <button
+                        onClick={() => suggestBmc(block.key)}
+                        disabled={bmcLoadingKey !== null}
+                        className="p-1 rounded-md hover:bg-primary/10 text-primary transition-colors disabled:opacity-50"
+                        title="Suggestion IA"
+                      >
+                        {bmcLoadingKey === block.key ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                      </button>
                     </div>
                     <Textarea
                       value={bmcData[block.key]}
