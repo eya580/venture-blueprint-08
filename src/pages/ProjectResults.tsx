@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
-import { ArrowLeft, BarChart3, TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, Target, DollarSign, Shield, Monitor, Download, Lightbulb } from "lucide-react";
+import { ArrowLeft, BarChart3, TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, Target, DollarSign, Shield, Monitor, Download, Lightbulb, Users, Gift, Truck, Handshake, Layers, Heart, Wallet, PenTool } from "lucide-react";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from "recharts";
 import type { ProjectData, SWOTAnalysis, FeasibilityResult } from "@/lib/analysis";
 import { Slider } from "@/components/ui/slider";
