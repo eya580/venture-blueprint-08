@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { motion } from "framer-motion";
-import { ArrowLeft, BarChart3, TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, Target, DollarSign, Shield, Monitor, Download, Lightbulb } from "lucide-react";
+import { ArrowLeft, BarChart3, TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, Target, DollarSign, Shield, Monitor, Download, Lightbulb, Users, Gift, Truck, Handshake, Layers, Heart, Wallet, PenTool } from "lucide-react";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from "recharts";
 import type { ProjectData, SWOTAnalysis, FeasibilityResult } from "@/lib/analysis";
 import { Slider } from "@/components/ui/slider";
@@ -185,6 +185,72 @@ export default function ProjectResults() {
                   </div>
                 </>
               )}
+            </CardContent>
+          </Card>
+        </motion.div>
+
+        {/* Business Model Canvas */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.27 }}>
+          <Card className="shadow-card">
+            <CardHeader><CardTitle className="font-display flex items-center gap-2"><Layers className="w-5 h-5 text-primary" /> Business Model Canvas</CardTitle></CardHeader>
+            <CardContent>
+              <div className="grid grid-cols-2 md:grid-cols-5 gap-3 auto-rows-fr">
+                {/* Row 1: Key Partners | Key Activities | Value Prop | Customer Rel | Customer Segments */}
+                {[
+                  { title: "Partenaires Clés", icon: Handshake, content: projectData.competitors || "À définir", span: "row-span-1" },
+                  { title: "Activités Clés", icon: PenTool, content: projectData.business_model || "À définir", span: "row-span-1" },
+                  { title: "Proposition de Valeur", icon: Gift, content: projectData.value_proposition || "À définir", span: "row-span-2 col-span-1", highlight: true },
+                  { title: "Relation Client", icon: Heart, content: "Accompagnement personnalisé, support continu", span: "row-span-1" },
+                  { title: "Segments Clients", icon: Users, content: projectData.target_customers || "À définir", span: "row-span-1" },
+                ].map((block) => (
+                  <div
+                    key={block.title}
+                    className={`p-3 rounded-xl border ${block.highlight ? "border-primary/30 bg-primary/5" : "border-border bg-card"} ${block.span} flex flex-col`}
+                  >
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <block.icon className={`w-3.5 h-3.5 ${block.highlight ? "text-primary" : "text-muted-foreground"}`} />
+                      <span className="text-xs font-semibold font-display text-foreground">{block.title}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed flex-1">{block.content}</p>
+                  </div>
+                ))}
+                {/* Row 2 partial: Key Resources | Channels */}
+                {[
+                  { title: "Ressources Clés", icon: Monitor, content: `Investissement: ${projectData.initial_investment?.toLocaleString()} TND` },
+                  { title: "Canaux", icon: Truck, content: "Plateforme digitale, vente directe" },
+                ].map((block) => (
+                  <div key={block.title} className="p-3 rounded-xl border border-border bg-card flex flex-col">
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <block.icon className="w-3.5 h-3.5 text-muted-foreground" />
+                      <span className="text-xs font-semibold font-display text-foreground">{block.title}</span>
+                    </div>
+                    <p className="text-xs text-muted-foreground leading-relaxed flex-1">{block.content}</p>
+                  </div>
+                ))}
+                {/* Skip one cell for value prop row-span-2 */}
+                <div className="hidden md:block" />
+                {/* Row 3: Cost Structure (span 2-3) | Revenue Streams (span 2-3) */}
+              </div>
+              <div className="grid md:grid-cols-2 gap-3 mt-3">
+                <div className="p-3 rounded-xl border border-border bg-card">
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <Wallet className="w-3.5 h-3.5 text-destructive" />
+                    <span className="text-xs font-semibold font-display text-foreground">Structure de Coûts</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Investissement initial: {projectData.initial_investment?.toLocaleString()} TND • Coûts mensuels: {projectData.monthly_costs?.toLocaleString()} TND
+                  </p>
+                </div>
+                <div className="p-3 rounded-xl border border-primary/30 bg-primary/5">
+                  <div className="flex items-center gap-1.5 mb-2">
+                    <DollarSign className="w-3.5 h-3.5 text-primary" />
+                    <span className="text-xs font-semibold font-display text-foreground">Sources de Revenus</span>
+                  </div>
+                  <p className="text-xs text-muted-foreground">
+                    Revenu mensuel estimé: {projectData.expected_revenue?.toLocaleString()} TND • Prix unitaire: {projectData.product_price} TND × {projectData.units_per_month} unités/mois
+                  </p>
+                </div>
+              </div>
             </CardContent>
           </Card>
         </motion.div>
