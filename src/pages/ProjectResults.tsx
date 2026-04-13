@@ -241,12 +241,12 @@ export default function ProjectResults() {
             <CardContent>
               <div className="grid grid-cols-2 md:grid-cols-5 gap-3 auto-rows-fr">
                 {([
-                  { key: "partners" as BmcKey, title: "Partenaires Clés", icon: Handshake, span: "row-span-1" },
-                  { key: "activities" as BmcKey, title: "Activités Clés", icon: PenTool, span: "row-span-1" },
+                  { key: "partners" as BmcKey, title: "Partenaires Clés", icon: Handshake, span: "row-span-1", highlight: false },
+                  { key: "activities" as BmcKey, title: "Activités Clés", icon: PenTool, span: "row-span-1", highlight: false },
                   { key: "value_prop" as BmcKey, title: "Proposition de Valeur", icon: Gift, span: "row-span-2 col-span-1", highlight: true },
-                  { key: "customer_rel" as BmcKey, title: "Relation Client", icon: Heart, span: "row-span-1" },
-                  { key: "segments" as BmcKey, title: "Segments Clients", icon: Users, span: "row-span-1" },
-                ] as const).map((block) => (
+                  { key: "customer_rel" as BmcKey, title: "Relation Client", icon: Heart, span: "row-span-1", highlight: false },
+                  { key: "segments" as BmcKey, title: "Segments Clients", icon: Users, span: "row-span-1", highlight: false },
+                ]).map((block) => (
                   <div
                     key={block.key}
                     className={`p-3 rounded-xl border ${block.highlight ? "border-primary/30 bg-primary/5" : "border-border bg-card"} ${block.span} flex flex-col`}
