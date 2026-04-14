@@ -22,6 +22,15 @@ interface ExportData {
   bmc: BmcData;
 }
 
+// Sanitize text for jsPDF: replace non-breaking spaces and other invisible Unicode chars
+function sanitize(text: string): string {
+  return text.replace(/[\u00A0\u202F\u2007\u2009]/g, " ");
+}
+
+function formatNum(n: number): string {
+  return n.toLocaleString("fr-FR").replace(/[\u00A0\u202F]/g, " ");
+}
+
 export function exportProjectPdf(data: ExportData) {
   const doc = new jsPDF();
   const pageW = doc.internal.pageSize.getWidth();
@@ -57,10 +66,10 @@ export function exportProjectPdf(data: ExportData) {
   doc.setFontSize(22);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(255, 255, 255);
-  doc.text(data.projectName, 14, 18);
+  doc.text(sanitize(data.projectName), 14, 18);
   doc.setFontSize(11);
   doc.setFont("helvetica", "normal");
-  doc.text(`Secteur : ${data.sector || "Non spécifié"}  •  Score global : ${data.feasibility.overall_score}/100`, 14, 28);
+  doc.text(sanitize(`Secteur : ${data.sector || "Non specifie"}  -  Score global : ${data.feasibility.overall_score}/100`), 14, 28);
   y = 45;
 
   // KPIs
@@ -71,13 +80,13 @@ export function exportProjectPdf(data: ExportData) {
     body: [
       ["Score global", `${data.feasibility.overall_score}/100`],
       ["ROI", `${data.feasibility.roi}%`],
-      ["VAN (NPV)", `${Number(data.feasibility.npv).toLocaleString("fr-TN", { minimumFractionDigits: 0, maximumFractionDigits: 2 })} TND`],
+      ["VAN (NPV)", `${formatNum(Number(data.feasibility.npv))} TND`],
       ["TRI (IRR)", `${data.feasibility.irr}%`],
-      ["Seuil de rentabilité", `${data.feasibility.breakeven_months} mois`],
-      ["Score Marché", `${data.feasibility.market_score}/100`],
+      ["Seuil de rentabilite", `${data.feasibility.breakeven_months} mois`],
+      ["Score Marche", `${data.feasibility.market_score}/100`],
       ["Score Technique", `${data.feasibility.technical_score}/100`],
       ["Score Financier", `${data.feasibility.financial_score}/100`],
-      ["Score Réglementaire", `${data.feasibility.regulatory_score}/100`],
+      ["Score Reglementaire", `${data.feasibility.regulatory_score}/100`],
     ],
     theme: "striped",
     headStyles: { fillColor: [30, 64, 175] },
@@ -90,15 +99,15 @@ export function exportProjectPdf(data: ExportData) {
   if (y > 200) { doc.addPage(); y = 20; }
   addTitle("Business Model Canvas");
   const bmcBlocks = [
-    ["Partenaires Clés", data.bmc.partners],
-    ["Activités Clés", data.bmc.activities],
-    ["Proposition de Valeur", data.bmc.value_prop],
-    ["Relation Client", data.bmc.customer_rel],
-    ["Segments Clients", data.bmc.segments],
-    ["Ressources Clés", data.bmc.resources],
-    ["Canaux", data.bmc.channels],
-    ["Structure de Coûts", data.bmc.costs],
-    ["Sources de Revenus", data.bmc.revenue],
+    ["Partenaires Cles", sanitize(data.bmc.partners)],
+    ["Activites Cles", sanitize(data.bmc.activities)],
+    ["Proposition de Valeur", sanitize(data.bmc.value_prop)],
+    ["Relation Client", sanitize(data.bmc.customer_rel)],
+    ["Segments Clients", sanitize(data.bmc.segments)],
+    ["Ressources Cles", sanitize(data.bmc.resources)],
+    ["Canaux", sanitize(data.bmc.channels)],
+    ["Structure de Couts", sanitize(data.bmc.costs)],
+    ["Sources de Revenus", sanitize(data.bmc.revenue)],
   ];
   autoTable(doc, {
     startY: y,
@@ -115,14 +124,14 @@ export function exportProjectPdf(data: ExportData) {
   if (y > 200) { doc.addPage(); y = 20; }
   addTitle("Analyse SWOT");
   const swotRows = [
-    ["Forces", data.swot.strengths.join("\n")],
-    ["Faiblesses", data.swot.weaknesses.join("\n")],
-    ["Opportunités", data.swot.opportunities.join("\n")],
-    ["Menaces", data.swot.threats.join("\n")],
+    ["Forces", sanitize(data.swot.strengths.join("\n"))],
+    ["Faiblesses", sanitize(data.swot.weaknesses.join("\n"))],
+    ["Opportunites", sanitize(data.swot.opportunities.join("\n"))],
+    ["Menaces", sanitize(data.swot.threats.join("\n"))],
   ];
   autoTable(doc, {
     startY: y,
-    head: [["Catégorie", "Éléments"]],
+    head: [["Categorie", "Elements"]],
     body: swotRows,
     theme: "striped",
     headStyles: { fillColor: [30, 64, 175] },
@@ -135,7 +144,7 @@ export function exportProjectPdf(data: ExportData) {
   if (y > 230) { doc.addPage(); y = 20; }
   addTitle("Recommandations");
   data.feasibility.recommendations.forEach((r, i) => {
-    addText(`${i + 1}. ${r}`, 18);
+    addText(sanitize(`${i + 1}. ${r}`), 18);
     y += 2;
   });
 
@@ -145,7 +154,7 @@ export function exportProjectPdf(data: ExportData) {
     doc.setPage(p);
     doc.setFontSize(8);
     doc.setTextColor(150, 150, 150);
-    doc.text(`${data.projectName} — Rapport de faisabilité  •  Page ${p}/${totalPages}`, 14, 290);
+    doc.text(sanitize(`${data.projectName} - Rapport de faisabilite  -  Page ${p}/${totalPages}`), 14, 290);
   }
 
   doc.save(`${data.projectName.replace(/\s+/g, "_")}_rapport.pdf`);
