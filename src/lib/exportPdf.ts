@@ -71,7 +71,7 @@ export function exportProjectPdf(data: ExportData) {
     body: [
       ["Score global", `${data.feasibility.overall_score}/100`],
       ["ROI", `${data.feasibility.roi}%`],
-      ["VAN (NPV)", `${data.feasibility.npv.toLocaleString()} TND`],
+      ["VAN (NPV)", `${Number(data.feasibility.npv).toLocaleString("fr-TN", { minimumFractionDigits: 0, maximumFractionDigits: 2 })} TND`],
       ["TRI (IRR)", `${data.feasibility.irr}%`],
       ["Seuil de rentabilité", `${data.feasibility.breakeven_months} mois`],
       ["Score Marché", `${data.feasibility.market_score}/100`],

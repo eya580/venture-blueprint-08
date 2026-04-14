@@ -105,10 +105,10 @@ export default function ProjectResults() {
       value_prop: saved?.value_prop || pd?.value_proposition || "À définir",
       customer_rel: saved?.customer_rel || "Accompagnement personnalisé, support continu",
       segments: saved?.segments || pd?.target_customers || "À définir",
-      resources: saved?.resources || `Investissement: ${pd?.initial_investment?.toLocaleString()} TND`,
+      resources: saved?.resources || `Investissement: ${Number(pd?.initial_investment || 0).toLocaleString("fr-TN")} TND`,
       channels: saved?.channels || "Plateforme digitale, vente directe",
-      costs: saved?.costs || `Investissement initial: ${pd?.initial_investment?.toLocaleString()} TND • Coûts mensuels: ${pd?.monthly_costs?.toLocaleString()} TND`,
-      revenue: saved?.revenue || `Revenu mensuel estimé: ${pd?.expected_revenue?.toLocaleString()} TND • Prix unitaire: ${pd?.product_price} TND × ${pd?.units_per_month} unités/mois`,
+      costs: saved?.costs || `Investissement initial: ${Number(pd?.initial_investment || 0).toLocaleString("fr-TN")} TND • Coûts mensuels: ${Number(pd?.monthly_costs || 0).toLocaleString("fr-TN")} TND`,
+      revenue: saved?.revenue || `Revenu mensuel estimé: ${Number(pd?.expected_revenue || 0).toLocaleString("fr-TN")} TND • Prix unitaire: ${Number(pd?.product_price || 0).toLocaleString("fr-TN")} TND × ${pd?.units_per_month || 0} unités/mois`,
     });
     setLoading(false);
   };
