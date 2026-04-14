@@ -148,9 +148,20 @@ export default function ProjectResults() {
               <p className="text-xs text-muted-foreground">{project.sector}</p>
             </div>
           </div>
-          <Badge className={`${feasibility.overall_score >= 70 ? "bg-primary" : feasibility.overall_score >= 50 ? "bg-accent" : "bg-destructive"} text-primary-foreground`}>
-            Score: {feasibility.overall_score}/100
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => exportProjectPdf({
+              projectName: project.name,
+              sector: project.sector || "",
+              feasibility,
+              swot,
+              bmc: bmcData,
+            })}>
+              <FileDown className="w-4 h-4 mr-1" /> Export PDF
+            </Button>
+            <Badge className={`${feasibility.overall_score >= 70 ? "bg-primary" : feasibility.overall_score >= 50 ? "bg-accent" : "bg-destructive"} text-primary-foreground`}>
+              Score: {feasibility.overall_score}/100
+            </Badge>
+          </div>
         </div>
       </div>
 
