@@ -22,6 +22,15 @@ interface ExportData {
   bmc: BmcData;
 }
 
+// Sanitize text for jsPDF: replace non-breaking spaces and other invisible Unicode chars
+function sanitize(text: string): string {
+  return text.replace(/[\u00A0\u202F\u2007\u2009]/g, " ");
+}
+
+function formatNum(n: number): string {
+  return n.toLocaleString("fr-FR").replace(/[\u00A0\u202F]/g, " ");
+}
+
 export function exportProjectPdf(data: ExportData) {
   const doc = new jsPDF();
   const pageW = doc.internal.pageSize.getWidth();
