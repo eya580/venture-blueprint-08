@@ -85,17 +85,6 @@ export function exportProjectPdf(data: ExportData) {
   });
   y = (doc as any).lastAutoTable.finalY + 10;
 
-  // Cash Flow
-  addTitle("Prévision Cash Flow (5 ans)");
-  autoTable(doc, {
-    startY: y,
-    head: [["Année", "Cash Flow (TND)"]],
-    body: data.feasibility.cash_flows.map((cf, i) => [`Année ${i + 1}`, cf.toLocaleString()]),
-    theme: "striped",
-    headStyles: { fillColor: [30, 64, 175] },
-    margin: { left: 14, right: 14 },
-  });
-  y = (doc as any).lastAutoTable.finalY + 10;
 
   // BMC
   if (y > 200) { doc.addPage(); y = 20; }
