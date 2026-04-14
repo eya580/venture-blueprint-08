@@ -66,10 +66,10 @@ export function exportProjectPdf(data: ExportData) {
   doc.setFontSize(22);
   doc.setFont("helvetica", "bold");
   doc.setTextColor(255, 255, 255);
-  doc.text(data.projectName, 14, 18);
+  doc.text(sanitize(data.projectName), 14, 18);
   doc.setFontSize(11);
   doc.setFont("helvetica", "normal");
-  doc.text(`Secteur : ${data.sector || "Non spécifié"}  •  Score global : ${data.feasibility.overall_score}/100`, 14, 28);
+  doc.text(sanitize(`Secteur : ${data.sector || "Non specifie"}  -  Score global : ${data.feasibility.overall_score}/100`), 14, 28);
   y = 45;
 
   // KPIs
@@ -80,13 +80,13 @@ export function exportProjectPdf(data: ExportData) {
     body: [
       ["Score global", `${data.feasibility.overall_score}/100`],
       ["ROI", `${data.feasibility.roi}%`],
-      ["VAN (NPV)", `${Number(data.feasibility.npv).toLocaleString("fr-TN", { minimumFractionDigits: 0, maximumFractionDigits: 2 })} TND`],
+      ["VAN (NPV)", `${formatNum(Number(data.feasibility.npv))} TND`],
       ["TRI (IRR)", `${data.feasibility.irr}%`],
-      ["Seuil de rentabilité", `${data.feasibility.breakeven_months} mois`],
-      ["Score Marché", `${data.feasibility.market_score}/100`],
+      ["Seuil de rentabilite", `${data.feasibility.breakeven_months} mois`],
+      ["Score Marche", `${data.feasibility.market_score}/100`],
       ["Score Technique", `${data.feasibility.technical_score}/100`],
       ["Score Financier", `${data.feasibility.financial_score}/100`],
-      ["Score Réglementaire", `${data.feasibility.regulatory_score}/100`],
+      ["Score Reglementaire", `${data.feasibility.regulatory_score}/100`],
     ],
     theme: "striped",
     headStyles: { fillColor: [30, 64, 175] },
