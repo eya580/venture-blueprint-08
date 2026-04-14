@@ -99,15 +99,15 @@ export function exportProjectPdf(data: ExportData) {
   if (y > 200) { doc.addPage(); y = 20; }
   addTitle("Business Model Canvas");
   const bmcBlocks = [
-    ["Partenaires Clés", data.bmc.partners],
-    ["Activités Clés", data.bmc.activities],
-    ["Proposition de Valeur", data.bmc.value_prop],
-    ["Relation Client", data.bmc.customer_rel],
-    ["Segments Clients", data.bmc.segments],
-    ["Ressources Clés", data.bmc.resources],
-    ["Canaux", data.bmc.channels],
-    ["Structure de Coûts", data.bmc.costs],
-    ["Sources de Revenus", data.bmc.revenue],
+    ["Partenaires Cles", sanitize(data.bmc.partners)],
+    ["Activites Cles", sanitize(data.bmc.activities)],
+    ["Proposition de Valeur", sanitize(data.bmc.value_prop)],
+    ["Relation Client", sanitize(data.bmc.customer_rel)],
+    ["Segments Clients", sanitize(data.bmc.segments)],
+    ["Ressources Cles", sanitize(data.bmc.resources)],
+    ["Canaux", sanitize(data.bmc.channels)],
+    ["Structure de Couts", sanitize(data.bmc.costs)],
+    ["Sources de Revenus", sanitize(data.bmc.revenue)],
   ];
   autoTable(doc, {
     startY: y,
