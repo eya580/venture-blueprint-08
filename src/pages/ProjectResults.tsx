@@ -6,7 +6,8 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { motion } from "framer-motion";
-import { ArrowLeft, BarChart3, TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, Target, DollarSign, Shield, Monitor, Download, Lightbulb, Users, Gift, Truck, Handshake, Layers, Heart, Wallet, PenTool, Save, Sparkles, Loader2 } from "lucide-react";
+import { ArrowLeft, BarChart3, TrendingUp, TrendingDown, AlertTriangle, CheckCircle2, Target, DollarSign, Shield, Monitor, Download, Lightbulb, Users, Gift, Truck, Handshake, Layers, Heart, Wallet, PenTool, Save, Sparkles, Loader2, FileDown } from "lucide-react";
+import { exportProjectPdf } from "@/lib/exportPdf";
 import { BarChart, Bar, LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, RadarChart, PolarGrid, PolarAngleAxis, PolarRadiusAxis, Radar } from "recharts";
 import type { ProjectData, SWOTAnalysis, FeasibilityResult } from "@/lib/analysis";
 import { Slider } from "@/components/ui/slider";
@@ -147,9 +148,20 @@ export default function ProjectResults() {
               <p className="text-xs text-muted-foreground">{project.sector}</p>
             </div>
           </div>
-          <Badge className={`${feasibility.overall_score >= 70 ? "bg-primary" : feasibility.overall_score >= 50 ? "bg-accent" : "bg-destructive"} text-primary-foreground`}>
-            Score: {feasibility.overall_score}/100
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={() => exportProjectPdf({
+              projectName: project.name,
+              sector: project.sector || "",
+              feasibility,
+              swot,
+              bmc: bmcData,
+            })}>
+              <FileDown className="w-4 h-4 mr-1" /> Export PDF
+            </Button>
+            <Badge className={`${feasibility.overall_score >= 70 ? "bg-primary" : feasibility.overall_score >= 50 ? "bg-accent" : "bg-destructive"} text-primary-foreground`}>
+              Score: {feasibility.overall_score}/100
+            </Badge>
+          </div>
         </div>
       </div>
 
