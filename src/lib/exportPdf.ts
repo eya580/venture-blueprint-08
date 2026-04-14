@@ -124,14 +124,14 @@ export function exportProjectPdf(data: ExportData) {
   if (y > 200) { doc.addPage(); y = 20; }
   addTitle("Analyse SWOT");
   const swotRows = [
-    ["Forces", data.swot.strengths.join("\n")],
-    ["Faiblesses", data.swot.weaknesses.join("\n")],
-    ["Opportunités", data.swot.opportunities.join("\n")],
-    ["Menaces", data.swot.threats.join("\n")],
+    ["Forces", sanitize(data.swot.strengths.join("\n"))],
+    ["Faiblesses", sanitize(data.swot.weaknesses.join("\n"))],
+    ["Opportunites", sanitize(data.swot.opportunities.join("\n"))],
+    ["Menaces", sanitize(data.swot.threats.join("\n"))],
   ];
   autoTable(doc, {
     startY: y,
-    head: [["Catégorie", "Éléments"]],
+    head: [["Categorie", "Elements"]],
     body: swotRows,
     theme: "striped",
     headStyles: { fillColor: [30, 64, 175] },
@@ -144,7 +144,7 @@ export function exportProjectPdf(data: ExportData) {
   if (y > 230) { doc.addPage(); y = 20; }
   addTitle("Recommandations");
   data.feasibility.recommendations.forEach((r, i) => {
-    addText(`${i + 1}. ${r}`, 18);
+    addText(sanitize(`${i + 1}. ${r}`), 18);
     y += 2;
   });
 
@@ -154,7 +154,7 @@ export function exportProjectPdf(data: ExportData) {
     doc.setPage(p);
     doc.setFontSize(8);
     doc.setTextColor(150, 150, 150);
-    doc.text(`${data.projectName} — Rapport de faisabilité  •  Page ${p}/${totalPages}`, 14, 290);
+    doc.text(sanitize(`${data.projectName} - Rapport de faisabilite  -  Page ${p}/${totalPages}`), 14, 290);
   }
 
   doc.save(`${data.projectName.replace(/\s+/g, "_")}_rapport.pdf`);
