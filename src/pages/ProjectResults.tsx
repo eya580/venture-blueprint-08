@@ -240,21 +240,40 @@ export default function ProjectResults() {
         {/* Simulator */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
           <Card className="shadow-card">
-            <CardHeader><CardTitle className="font-display">🎛️ Simulateur Financier Interactif</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle className="font-display">🎛️ Simulateur Financier Interactif</CardTitle>
+              <p className="text-xs text-muted-foreground mt-1">Ajustez les 4 leviers ci-dessous : revenu, marge, ROI et seuil de rentabilité se recalculent en temps réel.</p>
+            </CardHeader>
             <CardContent className="space-y-6">
               {simData && (
                 <>
+                  <div className="grid md:grid-cols-3 gap-3 p-4 rounded-lg bg-muted/40 border border-border">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Revenu mensuel calculé</p>
+                      <p className="text-lg font-bold font-display text-primary">{(simData.product_price * simData.units_per_month).toLocaleString("fr-TN")} TND</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Profit mensuel</p>
+                      <p className={`text-lg font-bold font-display ${(simData.product_price * simData.units_per_month - simData.monthly_costs) >= 0 ? "text-primary" : "text-destructive"}`}>
+                        {(simData.product_price * simData.units_per_month - simData.monthly_costs).toLocaleString("fr-TN")} TND
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Score global</p>
+                      <p className="text-lg font-bold font-display text-foreground">{feasibility.overall_score}/100</p>
+                    </div>
+                  </div>
                   <div>
                     <div className="flex justify-between text-sm mb-2"><span className="text-muted-foreground">Prix unitaire</span><span className="font-semibold text-foreground">{simData.product_price} TND</span></div>
                     <Slider value={[simData.product_price]} min={1} max={500} step={1} onValueChange={([v]) => handleSimChange("product_price", v)} />
                   </div>
                   <div>
-                    <div className="flex justify-between text-sm mb-2"><span className="text-muted-foreground">Coûts mensuels</span><span className="font-semibold text-foreground">{simData.monthly_costs.toLocaleString()} TND</span></div>
-                    <Slider value={[simData.monthly_costs]} min={500} max={100000} step={500} onValueChange={([v]) => handleSimChange("monthly_costs", v)} />
+                    <div className="flex justify-between text-sm mb-2"><span className="text-muted-foreground">Volume mensuel (unités)</span><span className="font-semibold text-foreground">{simData.units_per_month.toLocaleString("fr-TN")}</span></div>
+                    <Slider value={[simData.units_per_month]} min={1} max={10000} step={10} onValueChange={([v]) => handleSimChange("units_per_month", v)} />
                   </div>
                   <div>
-                    <div className="flex justify-between text-sm mb-2"><span className="text-muted-foreground">Volume mensuel (unités)</span><span className="font-semibold text-foreground">{simData.units_per_month}</span></div>
-                    <Slider value={[simData.units_per_month]} min={1} max={10000} step={10} onValueChange={([v]) => handleSimChange("units_per_month", v)} />
+                    <div className="flex justify-between text-sm mb-2"><span className="text-muted-foreground">Coûts fixes mensuels</span><span className="font-semibold text-foreground">{simData.monthly_costs.toLocaleString("fr-TN")} TND</span></div>
+                    <Slider value={[simData.monthly_costs]} min={500} max={100000} step={500} onValueChange={([v]) => handleSimChange("monthly_costs", v)} />
                   </div>
                   <div>
                     <div className="flex justify-between text-sm mb-2"><span className="text-muted-foreground">Croissance annuelle</span><span className="font-semibold text-foreground">{simData.growth_rate}%</span></div>
