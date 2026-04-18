@@ -49,15 +49,18 @@ export default function ProjectWizard() {
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) throw new Error("Non authentifié");
 
-      const swot = generateSWOT(data);
-      const feasibility = analyzeFeasibility(data);
+      const computedRevenue = data.product_price * data.units_per_month;
+      const finalData = { ...data, expected_revenue: computedRevenue || data.expected_revenue };
+
+      const swot = generateSWOT(finalData);
+      const feasibility = analyzeFeasibility(finalData);
 
       const { data: project, error } = await supabase.from("projects").insert({
         user_id: userData.user.id,
-        name: data.name,
-        description: data.description,
-        sector: data.sector,
-        project_data: data as any,
+        name: finalData.name,
+        description: finalData.description,
+        sector: finalData.sector,
+        project_data: finalData as any,
         swot_analysis: swot as any,
         feasibility_result: feasibility as any,
         overall_score: feasibility.overall_score,
