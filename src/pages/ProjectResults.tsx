@@ -295,100 +295,43 @@ export default function ProjectResults() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-3 auto-rows-fr">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-fr">
                 {([
-                  { key: "partners" as BmcKey, title: "Partenaires Clés", icon: Handshake, span: "row-span-1", highlight: false },
-                  { key: "activities" as BmcKey, title: "Activités Clés", icon: PenTool, span: "row-span-1", highlight: false },
-                  { key: "value_prop" as BmcKey, title: "Proposition de Valeur", icon: Gift, span: "row-span-2 col-span-1", highlight: true },
-                  { key: "customer_rel" as BmcKey, title: "Relation Client", icon: Heart, span: "row-span-1", highlight: false },
-                  { key: "segments" as BmcKey, title: "Segments Clients", icon: Users, span: "row-span-1", highlight: false },
+                  { key: "partners" as BmcKey, title: "Partenaires Clés", icon: Handshake, highlight: false },
+                  { key: "activities" as BmcKey, title: "Activités Clés", icon: PenTool, highlight: false },
+                  { key: "value_prop" as BmcKey, title: "Proposition de Valeur", icon: Gift, highlight: true },
+                  { key: "resources" as BmcKey, title: "Ressources Clés", icon: Monitor, highlight: false },
+                  { key: "customer_rel" as BmcKey, title: "Relation Client", icon: Heart, highlight: false },
+                  { key: "channels" as BmcKey, title: "Canaux", icon: Truck, highlight: false },
+                  { key: "segments" as BmcKey, title: "Segments Clients", icon: Users, highlight: false },
+                  { key: "costs" as BmcKey, title: "Structure de Coûts", icon: Wallet, highlight: false, accent: "destructive" as const },
+                  { key: "revenue" as BmcKey, title: "Sources de Revenus", icon: DollarSign, highlight: true },
                 ]).map((block) => (
                   <div
                     key={block.key}
-                    className={`p-3 rounded-xl border ${block.highlight ? "border-primary/30 bg-primary/5" : "border-border bg-card"} ${block.span} flex flex-col`}
+                    className={`p-4 rounded-xl border ${block.highlight ? "border-primary/40 bg-primary/5" : "border-border bg-card"} flex flex-col min-h-[200px]`}
                   >
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-1.5">
-                        <block.icon className={`w-3.5 h-3.5 ${block.highlight ? "text-primary" : "text-muted-foreground"}`} />
-                        <span className="text-xs font-semibold font-display text-foreground">{block.title}</span>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <block.icon className={`w-4 h-4 ${block.highlight ? "text-primary" : (block as any).accent === "destructive" ? "text-destructive" : "text-muted-foreground"}`} />
+                        <span className="text-sm font-semibold font-display text-foreground">{block.title}</span>
                       </div>
                       <button
                         onClick={() => suggestBmc(block.key)}
                         disabled={bmcLoadingKey !== null}
-                        className="p-1 rounded-md hover:bg-primary/10 text-primary transition-colors disabled:opacity-50"
+                        className="p-1.5 rounded-md hover:bg-primary/10 text-primary transition-colors disabled:opacity-50"
                         title="Suggestion IA"
                       >
-                        {bmcLoadingKey === block.key ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                        {bmcLoadingKey === block.key ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
                       </button>
                     </div>
                     <Textarea
                       value={bmcData[block.key]}
                       onChange={(e) => handleBmcChange(block.key, e.target.value)}
-                      className="text-xs text-muted-foreground leading-relaxed flex-1 resize-none border-0 bg-transparent p-0 focus-visible:ring-0 shadow-none min-h-[60px]"
+                      className="text-sm text-foreground/80 leading-relaxed flex-1 resize-none border-0 bg-transparent p-0 focus-visible:ring-0 shadow-none min-h-[140px]"
                     />
                   </div>
                 ))}
-                {([
-                  { key: "resources" as BmcKey, title: "Ressources Clés", icon: Monitor },
-                  { key: "channels" as BmcKey, title: "Canaux", icon: Truck },
-                ] as const).map((block) => (
-                  <div key={block.key} className="p-3 rounded-xl border border-border bg-card flex flex-col">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-1.5">
-                        <block.icon className="w-3.5 h-3.5 text-muted-foreground" />
-                        <span className="text-xs font-semibold font-display text-foreground">{block.title}</span>
-                      </div>
-                      <button
-                        onClick={() => suggestBmc(block.key)}
-                        disabled={bmcLoadingKey !== null}
-                        className="p-1 rounded-md hover:bg-primary/10 text-primary transition-colors disabled:opacity-50"
-                        title="Suggestion IA"
-                      >
-                        {bmcLoadingKey === block.key ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-                      </button>
-                    </div>
-                    <Textarea
-                      value={bmcData[block.key]}
-                      onChange={(e) => handleBmcChange(block.key, e.target.value)}
-                      className="text-xs text-muted-foreground leading-relaxed flex-1 resize-none border-0 bg-transparent p-0 focus-visible:ring-0 shadow-none min-h-[60px]"
-                    />
-                  </div>
-                ))}
-                <div className="hidden md:block" />
-              </div>
-              <div className="grid md:grid-cols-2 gap-3 mt-3">
-                <div className="p-3 rounded-xl border border-border bg-card">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-1.5">
-                      <Wallet className="w-3.5 h-3.5 text-destructive" />
-                      <span className="text-xs font-semibold font-display text-foreground">Structure de Coûts</span>
-                    </div>
-                    <button onClick={() => suggestBmc("costs")} disabled={bmcLoadingKey !== null} className="p-1 rounded-md hover:bg-primary/10 text-primary transition-colors disabled:opacity-50" title="Suggestion IA">
-                      {bmcLoadingKey === "costs" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-                    </button>
-                  </div>
-                  <Textarea
-                    value={bmcData.costs}
-                    onChange={(e) => handleBmcChange("costs", e.target.value)}
-                    className="text-xs text-muted-foreground resize-none border-0 bg-transparent p-0 focus-visible:ring-0 shadow-none min-h-[40px]"
-                  />
-                </div>
-                <div className="p-3 rounded-xl border border-primary/30 bg-primary/5">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-1.5">
-                      <DollarSign className="w-3.5 h-3.5 text-primary" />
-                      <span className="text-xs font-semibold font-display text-foreground">Sources de Revenus</span>
-                    </div>
-                    <button onClick={() => suggestBmc("revenue")} disabled={bmcLoadingKey !== null} className="p-1 rounded-md hover:bg-primary/10 text-primary transition-colors disabled:opacity-50" title="Suggestion IA">
-                      {bmcLoadingKey === "revenue" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-                    </button>
-                  </div>
-                  <Textarea
-                    value={bmcData.revenue}
-                    onChange={(e) => handleBmcChange("revenue", e.target.value)}
-                    className="text-xs text-muted-foreground resize-none border-0 bg-transparent p-0 focus-visible:ring-0 shadow-none min-h-[40px]"
-                  />
-                </div>
               </div>
             </CardContent>
           </Card>
