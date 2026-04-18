@@ -344,10 +344,10 @@ export default function ProjectResults() {
             <CardContent>
               <div className="grid md:grid-cols-2 gap-4">
                 {[
-                  { title: "Forces", items: swot.strengths, color: "bg-primary/10 text-primary", icon: CheckCircle2 },
-                  { title: "Faiblesses", items: swot.weaknesses, color: "bg-destructive/10 text-destructive", icon: AlertTriangle },
-                  { title: "Opportunités", items: swot.opportunities, color: "bg-accent/10 text-accent-foreground", icon: TrendingUp },
-                  { title: "Menaces", items: swot.threats, color: "bg-muted text-muted-foreground", icon: TrendingDown },
+                  { title: "Forces", items: swot.strengths, color: "bg-primary/10 text-primary border border-primary/20", icon: CheckCircle2 },
+                  { title: "Faiblesses", items: swot.weaknesses, color: "bg-destructive/10 text-destructive border border-destructive/20", icon: AlertTriangle },
+                  { title: "Opportunités", items: swot.opportunities, color: "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-100 border border-emerald-200 dark:border-emerald-900", icon: TrendingUp },
+                  { title: "Menaces", items: swot.threats, color: "bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-100 border border-amber-200 dark:border-amber-900", icon: TrendingDown },
                 ].map((q) => (
                   <div key={q.title} className={`p-4 rounded-xl ${q.color}`}>
                     <div className="flex items-center gap-2 mb-3 font-display font-semibold">
