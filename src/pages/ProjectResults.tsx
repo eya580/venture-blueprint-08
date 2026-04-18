@@ -240,21 +240,40 @@ export default function ProjectResults() {
         {/* Simulator */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.25 }}>
           <Card className="shadow-card">
-            <CardHeader><CardTitle className="font-display">🎛️ Simulateur Financier Interactif</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle className="font-display">🎛️ Simulateur Financier Interactif</CardTitle>
+              <p className="text-xs text-muted-foreground mt-1">Ajustez les 4 leviers ci-dessous : revenu, marge, ROI et seuil de rentabilité se recalculent en temps réel.</p>
+            </CardHeader>
             <CardContent className="space-y-6">
               {simData && (
                 <>
+                  <div className="grid md:grid-cols-3 gap-3 p-4 rounded-lg bg-muted/40 border border-border">
+                    <div>
+                      <p className="text-xs text-muted-foreground">Revenu mensuel calculé</p>
+                      <p className="text-lg font-bold font-display text-primary">{(simData.product_price * simData.units_per_month).toLocaleString("fr-TN")} TND</p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Profit mensuel</p>
+                      <p className={`text-lg font-bold font-display ${(simData.product_price * simData.units_per_month - simData.monthly_costs) >= 0 ? "text-primary" : "text-destructive"}`}>
+                        {(simData.product_price * simData.units_per_month - simData.monthly_costs).toLocaleString("fr-TN")} TND
+                      </p>
+                    </div>
+                    <div>
+                      <p className="text-xs text-muted-foreground">Score global</p>
+                      <p className="text-lg font-bold font-display text-foreground">{feasibility.overall_score}/100</p>
+                    </div>
+                  </div>
                   <div>
                     <div className="flex justify-between text-sm mb-2"><span className="text-muted-foreground">Prix unitaire</span><span className="font-semibold text-foreground">{simData.product_price} TND</span></div>
                     <Slider value={[simData.product_price]} min={1} max={500} step={1} onValueChange={([v]) => handleSimChange("product_price", v)} />
                   </div>
                   <div>
-                    <div className="flex justify-between text-sm mb-2"><span className="text-muted-foreground">Coûts mensuels</span><span className="font-semibold text-foreground">{simData.monthly_costs.toLocaleString()} TND</span></div>
-                    <Slider value={[simData.monthly_costs]} min={500} max={100000} step={500} onValueChange={([v]) => handleSimChange("monthly_costs", v)} />
+                    <div className="flex justify-between text-sm mb-2"><span className="text-muted-foreground">Volume mensuel (unités)</span><span className="font-semibold text-foreground">{simData.units_per_month.toLocaleString("fr-TN")}</span></div>
+                    <Slider value={[simData.units_per_month]} min={1} max={10000} step={10} onValueChange={([v]) => handleSimChange("units_per_month", v)} />
                   </div>
                   <div>
-                    <div className="flex justify-between text-sm mb-2"><span className="text-muted-foreground">Volume mensuel (unités)</span><span className="font-semibold text-foreground">{simData.units_per_month}</span></div>
-                    <Slider value={[simData.units_per_month]} min={1} max={10000} step={10} onValueChange={([v]) => handleSimChange("units_per_month", v)} />
+                    <div className="flex justify-between text-sm mb-2"><span className="text-muted-foreground">Coûts fixes mensuels</span><span className="font-semibold text-foreground">{simData.monthly_costs.toLocaleString("fr-TN")} TND</span></div>
+                    <Slider value={[simData.monthly_costs]} min={500} max={100000} step={500} onValueChange={([v]) => handleSimChange("monthly_costs", v)} />
                   </div>
                   <div>
                     <div className="flex justify-between text-sm mb-2"><span className="text-muted-foreground">Croissance annuelle</span><span className="font-semibold text-foreground">{simData.growth_rate}%</span></div>
@@ -276,100 +295,43 @@ export default function ProjectResults() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-5 gap-3 auto-rows-fr">
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 auto-rows-fr">
                 {([
-                  { key: "partners" as BmcKey, title: "Partenaires Clés", icon: Handshake, span: "row-span-1", highlight: false },
-                  { key: "activities" as BmcKey, title: "Activités Clés", icon: PenTool, span: "row-span-1", highlight: false },
-                  { key: "value_prop" as BmcKey, title: "Proposition de Valeur", icon: Gift, span: "row-span-2 col-span-1", highlight: true },
-                  { key: "customer_rel" as BmcKey, title: "Relation Client", icon: Heart, span: "row-span-1", highlight: false },
-                  { key: "segments" as BmcKey, title: "Segments Clients", icon: Users, span: "row-span-1", highlight: false },
+                  { key: "partners" as BmcKey, title: "Partenaires Clés", icon: Handshake, highlight: false },
+                  { key: "activities" as BmcKey, title: "Activités Clés", icon: PenTool, highlight: false },
+                  { key: "value_prop" as BmcKey, title: "Proposition de Valeur", icon: Gift, highlight: true },
+                  { key: "resources" as BmcKey, title: "Ressources Clés", icon: Monitor, highlight: false },
+                  { key: "customer_rel" as BmcKey, title: "Relation Client", icon: Heart, highlight: false },
+                  { key: "channels" as BmcKey, title: "Canaux", icon: Truck, highlight: false },
+                  { key: "segments" as BmcKey, title: "Segments Clients", icon: Users, highlight: false },
+                  { key: "costs" as BmcKey, title: "Structure de Coûts", icon: Wallet, highlight: false, accent: "destructive" as const },
+                  { key: "revenue" as BmcKey, title: "Sources de Revenus", icon: DollarSign, highlight: true },
                 ]).map((block) => (
                   <div
                     key={block.key}
-                    className={`p-3 rounded-xl border ${block.highlight ? "border-primary/30 bg-primary/5" : "border-border bg-card"} ${block.span} flex flex-col`}
+                    className={`p-4 rounded-xl border ${block.highlight ? "border-primary/40 bg-primary/5" : "border-border bg-card"} flex flex-col min-h-[200px]`}
                   >
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-1.5">
-                        <block.icon className={`w-3.5 h-3.5 ${block.highlight ? "text-primary" : "text-muted-foreground"}`} />
-                        <span className="text-xs font-semibold font-display text-foreground">{block.title}</span>
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <block.icon className={`w-4 h-4 ${block.highlight ? "text-primary" : (block as any).accent === "destructive" ? "text-destructive" : "text-muted-foreground"}`} />
+                        <span className="text-sm font-semibold font-display text-foreground">{block.title}</span>
                       </div>
                       <button
                         onClick={() => suggestBmc(block.key)}
                         disabled={bmcLoadingKey !== null}
-                        className="p-1 rounded-md hover:bg-primary/10 text-primary transition-colors disabled:opacity-50"
+                        className="p-1.5 rounded-md hover:bg-primary/10 text-primary transition-colors disabled:opacity-50"
                         title="Suggestion IA"
                       >
-                        {bmcLoadingKey === block.key ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
+                        {bmcLoadingKey === block.key ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
                       </button>
                     </div>
                     <Textarea
                       value={bmcData[block.key]}
                       onChange={(e) => handleBmcChange(block.key, e.target.value)}
-                      className="text-xs text-muted-foreground leading-relaxed flex-1 resize-none border-0 bg-transparent p-0 focus-visible:ring-0 shadow-none min-h-[60px]"
+                      className="text-sm text-foreground/80 leading-relaxed flex-1 resize-none border-0 bg-transparent p-0 focus-visible:ring-0 shadow-none min-h-[140px]"
                     />
                   </div>
                 ))}
-                {([
-                  { key: "resources" as BmcKey, title: "Ressources Clés", icon: Monitor },
-                  { key: "channels" as BmcKey, title: "Canaux", icon: Truck },
-                ] as const).map((block) => (
-                  <div key={block.key} className="p-3 rounded-xl border border-border bg-card flex flex-col">
-                    <div className="flex items-center justify-between mb-2">
-                      <div className="flex items-center gap-1.5">
-                        <block.icon className="w-3.5 h-3.5 text-muted-foreground" />
-                        <span className="text-xs font-semibold font-display text-foreground">{block.title}</span>
-                      </div>
-                      <button
-                        onClick={() => suggestBmc(block.key)}
-                        disabled={bmcLoadingKey !== null}
-                        className="p-1 rounded-md hover:bg-primary/10 text-primary transition-colors disabled:opacity-50"
-                        title="Suggestion IA"
-                      >
-                        {bmcLoadingKey === block.key ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-                      </button>
-                    </div>
-                    <Textarea
-                      value={bmcData[block.key]}
-                      onChange={(e) => handleBmcChange(block.key, e.target.value)}
-                      className="text-xs text-muted-foreground leading-relaxed flex-1 resize-none border-0 bg-transparent p-0 focus-visible:ring-0 shadow-none min-h-[60px]"
-                    />
-                  </div>
-                ))}
-                <div className="hidden md:block" />
-              </div>
-              <div className="grid md:grid-cols-2 gap-3 mt-3">
-                <div className="p-3 rounded-xl border border-border bg-card">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-1.5">
-                      <Wallet className="w-3.5 h-3.5 text-destructive" />
-                      <span className="text-xs font-semibold font-display text-foreground">Structure de Coûts</span>
-                    </div>
-                    <button onClick={() => suggestBmc("costs")} disabled={bmcLoadingKey !== null} className="p-1 rounded-md hover:bg-primary/10 text-primary transition-colors disabled:opacity-50" title="Suggestion IA">
-                      {bmcLoadingKey === "costs" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-                    </button>
-                  </div>
-                  <Textarea
-                    value={bmcData.costs}
-                    onChange={(e) => handleBmcChange("costs", e.target.value)}
-                    className="text-xs text-muted-foreground resize-none border-0 bg-transparent p-0 focus-visible:ring-0 shadow-none min-h-[40px]"
-                  />
-                </div>
-                <div className="p-3 rounded-xl border border-primary/30 bg-primary/5">
-                  <div className="flex items-center justify-between mb-2">
-                    <div className="flex items-center gap-1.5">
-                      <DollarSign className="w-3.5 h-3.5 text-primary" />
-                      <span className="text-xs font-semibold font-display text-foreground">Sources de Revenus</span>
-                    </div>
-                    <button onClick={() => suggestBmc("revenue")} disabled={bmcLoadingKey !== null} className="p-1 rounded-md hover:bg-primary/10 text-primary transition-colors disabled:opacity-50" title="Suggestion IA">
-                      {bmcLoadingKey === "revenue" ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Sparkles className="w-3.5 h-3.5" />}
-                    </button>
-                  </div>
-                  <Textarea
-                    value={bmcData.revenue}
-                    onChange={(e) => handleBmcChange("revenue", e.target.value)}
-                    className="text-xs text-muted-foreground resize-none border-0 bg-transparent p-0 focus-visible:ring-0 shadow-none min-h-[40px]"
-                  />
-                </div>
               </div>
             </CardContent>
           </Card>
@@ -382,10 +344,10 @@ export default function ProjectResults() {
             <CardContent>
               <div className="grid md:grid-cols-2 gap-4">
                 {[
-                  { title: "Forces", items: swot.strengths, color: "bg-primary/10 text-primary", icon: CheckCircle2 },
-                  { title: "Faiblesses", items: swot.weaknesses, color: "bg-destructive/10 text-destructive", icon: AlertTriangle },
-                  { title: "Opportunités", items: swot.opportunities, color: "bg-accent/10 text-accent-foreground", icon: TrendingUp },
-                  { title: "Menaces", items: swot.threats, color: "bg-muted text-muted-foreground", icon: TrendingDown },
+                  { title: "Forces", items: swot.strengths, color: "bg-primary/10 text-primary border border-primary/20", icon: CheckCircle2 },
+                  { title: "Faiblesses", items: swot.weaknesses, color: "bg-destructive/10 text-destructive border border-destructive/20", icon: AlertTriangle },
+                  { title: "Opportunités", items: swot.opportunities, color: "bg-emerald-50 dark:bg-emerald-950/40 text-emerald-900 dark:text-emerald-100 border border-emerald-200 dark:border-emerald-900", icon: TrendingUp },
+                  { title: "Menaces", items: swot.threats, color: "bg-amber-50 dark:bg-amber-950/40 text-amber-900 dark:text-amber-100 border border-amber-200 dark:border-amber-900", icon: TrendingDown },
                 ].map((q) => (
                   <div key={q.title} className={`p-4 rounded-xl ${q.color}`}>
                     <div className="flex items-center gap-2 mb-3 font-display font-semibold">

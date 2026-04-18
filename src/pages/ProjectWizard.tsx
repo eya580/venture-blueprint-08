@@ -30,6 +30,8 @@ const initialData: ProjectData = {
   value_proposition: "", target_customers: "", business_model: "",
   market_size: 0, competitors: "", initial_investment: 0, monthly_costs: 0,
   expected_revenue: 0, product_price: 0, units_per_month: 0, growth_rate: 5,
+  team_size: 1, funding_source: "", unique_advantage: "",
+  marketing_budget: 0, pricing_strategy: "", variable_cost_per_unit: 0,
 };
 
 export default function ProjectWizard() {
@@ -47,15 +49,18 @@ export default function ProjectWizard() {
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) throw new Error("Non authentifié");
 
-      const swot = generateSWOT(data);
-      const feasibility = analyzeFeasibility(data);
+      const computedRevenue = data.product_price * data.units_per_month;
+      const finalData = { ...data, expected_revenue: computedRevenue || data.expected_revenue };
+
+      const swot = generateSWOT(finalData);
+      const feasibility = analyzeFeasibility(finalData);
 
       const { data: project, error } = await supabase.from("projects").insert({
         user_id: userData.user.id,
-        name: data.name,
-        description: data.description,
-        sector: data.sector,
-        project_data: data as any,
+        name: finalData.name,
+        description: finalData.description,
+        sector: finalData.sector,
+        project_data: finalData as any,
         swot_analysis: swot as any,
         feasibility_result: feasibility as any,
         overall_score: feasibility.overall_score,
@@ -75,7 +80,7 @@ export default function ProjectWizard() {
     if (step === 0) return data.name && data.description && data.sector;
     if (step === 1) return data.mission && data.vision && data.value_proposition;
     if (step === 2) return data.target_customers && data.market_size > 0;
-    return data.initial_investment > 0 && data.expected_revenue > 0;
+    return data.initial_investment > 0 && data.product_price > 0 && data.units_per_month > 0;
   };
 
   return (
