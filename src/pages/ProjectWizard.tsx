@@ -180,7 +180,7 @@ export default function ProjectWizard() {
                       <Textarea placeholder="Décrivez vos clients idéaux..." value={data.target_customers} onChange={(e) => update("target_customers", e.target.value)} rows={3} />
                     </div>
                     <div className="space-y-2">
-                      <Label>Taille du marché estimée (€) *</Label>
+                      <Label>Taille du marché estimée (TND) *</Label>
                       <Input type="number" placeholder="1000000" value={data.market_size || ""} onChange={(e) => update("market_size", Number(e.target.value))} />
                     </div>
                     <div className="space-y-2">
@@ -194,21 +194,21 @@ export default function ProjectWizard() {
                   <>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label>Investissement initial (€) *</Label>
+                        <Label>Investissement initial (TND) *</Label>
                         <Input type="number" placeholder="50000" value={data.initial_investment || ""} onChange={(e) => update("initial_investment", Number(e.target.value))} />
                       </div>
                       <div className="space-y-2">
-                        <Label>Coûts mensuels (€) *</Label>
+                        <Label>Coûts mensuels (TND) *</Label>
                         <Input type="number" placeholder="5000" value={data.monthly_costs || ""} onChange={(e) => update("monthly_costs", Number(e.target.value))} />
                       </div>
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label>Revenus mensuels prévus (€) *</Label>
+                        <Label>Revenus mensuels prévus (TND) *</Label>
                         <Input type="number" placeholder="15000" value={data.expected_revenue || ""} onChange={(e) => update("expected_revenue", Number(e.target.value))} />
                       </div>
                       <div className="space-y-2">
-                        <Label>Prix unitaire (€)</Label>
+                        <Label>Prix unitaire (TND)</Label>
                         <Input type="number" placeholder="50" value={data.product_price || ""} onChange={(e) => update("product_price", Number(e.target.value))} />
                       </div>
                     </div>
