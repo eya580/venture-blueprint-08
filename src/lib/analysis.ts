@@ -15,6 +15,13 @@ export interface ProjectData {
   product_price: number;
   units_per_month: number;
   growth_rate: number;
+  // Champs professionnels additionnels (optionnels)
+  team_size?: number;
+  funding_source?: string;
+  unique_advantage?: string;
+  marketing_budget?: number;
+  pricing_strategy?: string;
+  variable_cost_per_unit?: number;
 }
 
 export interface SWOTAnalysis {
