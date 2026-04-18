@@ -30,6 +30,8 @@ const initialData: ProjectData = {
   value_proposition: "", target_customers: "", business_model: "",
   market_size: 0, competitors: "", initial_investment: 0, monthly_costs: 0,
   expected_revenue: 0, product_price: 0, units_per_month: 0, growth_rate: 5,
+  team_size: 1, funding_source: "", unique_advantage: "",
+  marketing_budget: 0, pricing_strategy: "", variable_cost_per_unit: 0,
 };
 
 export default function ProjectWizard() {
