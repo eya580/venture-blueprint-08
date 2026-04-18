@@ -77,7 +77,7 @@ export default function ProjectWizard() {
     if (step === 0) return data.name && data.description && data.sector;
     if (step === 1) return data.mission && data.vision && data.value_proposition;
     if (step === 2) return data.target_customers && data.market_size > 0;
-    return data.initial_investment > 0 && data.expected_revenue > 0;
+    return data.initial_investment > 0 && data.product_price > 0 && data.units_per_month > 0;
   };
 
   return (
